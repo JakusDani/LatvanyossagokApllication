@@ -23,7 +23,7 @@ namespace LatvanyossagokApplication
                 sb.Server = "localhost";
                 sb.UserID = "root";
                 sb.Password = "";
-                sb.Port = 3307;
+                sb.Port = 3306;
                 sb.Database = "latvanyossagokdb";
                 //conn = new MySqlConnection("Server=localhost;" +
                 //                            " Port=3307;" +
@@ -34,7 +34,7 @@ namespace LatvanyossagokApplication
                 conn.Open();
                 varosTablaLetrehoz();
                 latvanyossagTablaLetrehoz();
-               // idegenkulcsok();
+                idegenkulcsok();
                 varoslistazas();
             
 
@@ -61,15 +61,15 @@ namespace LatvanyossagokApplication
                                         REFERENCES varosok (id))";
             command.ExecuteNonQuery();
         }
-        //private void idegenkulcsok()
-        //{
-        //    var command = conn.CreateCommand();
-        //    command.CommandText = @"ALTER TABLE latvanyossagok
-        //                            ADD CONSTRAINT latvanyossagok_idegenkulcs 
-        //                            FOREIGN KEY(varos_id) 
-        //                            REFERENCES varosok (id);";
-        //    command.ExecuteNonQuery();
-        //}
+        private void idegenkulcsok()
+        {
+            var command = conn.CreateCommand();
+            command.CommandText = @"ALTER TABLE latvanyossagok
+                                    ADD CONSTRAINT latvanyossagok_idegenkulcs 
+                                    FOREIGN KEY(varos_id) 
+                                    REFERENCES varosok (id);";
+            command.ExecuteNonQuery();
+        }
         private void varoslistazas()
         {
             listBox_varosok.Items.Clear();
@@ -177,6 +177,14 @@ namespace LatvanyossagokApplication
             {
                 MessageBox.Show("Ezt a várost nem tudod törölni mert meg van adva látványosság");
             }
+        }
+
+        private void button_modositas_Click(object sender, EventArgs e)
+        {
+            groupBox_modositas.Enabled = true;
+            
+            }
+
         }
     }
 }

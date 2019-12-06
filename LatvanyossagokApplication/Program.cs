@@ -14,16 +14,16 @@ namespace LatvanyossagokApplication
         [STAThread]
         static void Main()
         {
-            //try
-            //{
+            try
+            {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 Application.Run(new Form1());
-            //}
-            //catch (Exception e)
-            //{
-              //  MessageBox.Show("Nem sikerült kapcsolódni az Adatbázishoz!!! " + e);
-            //}
+            }
+            catch (Exception e)
+            {
+              MessageBox.Show("Nem sikerült kapcsolódni az Adatbázishoz!!! " + e);
+            }
         }
             
 
