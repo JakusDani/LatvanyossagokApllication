@@ -18,14 +18,13 @@ namespace LatvanyossagokApplication
         public Form1()
         {
             InitializeComponent();
-            try
-            {
+            
                 MySqlConnectionStringBuilder sb = new MySqlConnectionStringBuilder();
                 sb.Server = "localhost";
                 sb.UserID = "root";
                 sb.Password = "";
                 sb.Port = 3307;
-                sb.Database = "latvanyosagokdb";
+                sb.Database = "latvanyossagokdb";
                 //conn = new MySqlConnection("Server=localhost;" +
                 //                            " Port=3307;" +
                 //                            " database=latvanyosagokdb;" +
@@ -37,11 +36,7 @@ namespace LatvanyossagokApplication
                 latvanyossagTablaLetrehoz();
                // idegenkulcsok();
                 varoslistazas();
-            }
-            catch(Exception e)
-            {
-                MessageBox.Show("Nem sikerült kapcsolódni az Adatbázishoz!!! "+e);
-            }
+            
 
         }
         private void varosTablaLetrehoz()
@@ -95,18 +90,93 @@ namespace LatvanyossagokApplication
 
         private void button_hozzaAd_Click(object sender, EventArgs e)
         {
-            var cmd = conn.CreateCommand();
-            cmd.CommandText = @"INSERT INTO varosok (nev, lakossag)
+            if (textBox_varosHozzaAd.Text == "")
+            {
+                MessageBox.Show("Nem adta meg a város nevét");
+            }
+            else if (numericUpDown_lakossagHozzaAd.Value == 0)
+            {
+                MessageBox.Show("Nem adta meg a lakosság lélek számát");
+            }
+            else
+            {
+                var cmd = conn.CreateCommand();
+                cmd.CommandText = @"INSERT INTO varosok (nev, lakossag)
                                 VALUES (@nev, @lakossag)";
-            cmd.Parameters.AddWithValue("@nev", textBox_varosHozzaAd.Text);
-            cmd.Parameters.AddWithValue("@lakossag", numericUpDown_lakossagHozzaAd.Value);
-            cmd.ExecuteNonQuery();
-            varoslistazas();
+                cmd.Parameters.AddWithValue("@nev", textBox_varosHozzaAd.Text);
+                cmd.Parameters.AddWithValue("@lakossag", numericUpDown_lakossagHozzaAd.Value);
+                cmd.ExecuteNonQuery();
+                varoslistazas();
+                MessageBox.Show("A várost sikeresen hozáadta!!");
+                textBox_varosHozzaAd.Clear();
+                numericUpDown_lakossagHozzaAd.Value = 0;
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             varoslistazas();
+        }
+
+        private void label_latvanyossag_leiras_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button_latvanyossag_hozaad_Click(object sender, EventArgs e)
+        {
+            //hiba keresés
+            if (listBox_varosok.SelectedIndex == -1)
+            {
+                MessageBox.Show("nem választott ki várost");
+                return;
+            }
+            else if (textBox_latvanyossagNev.Text == "")
+            {
+                MessageBox.Show("Nem adott meg nevet");
+            }
+            else if (textBox_latvanyossag_leiras.Text == "")
+            {
+                MessageBox.Show("Nem adott meg leírást");
+            }
+            else if (numericUpDown_latvanyossag_ar.Value == 0)
+            {
+                MessageBox.Show("Nem adott meg árat");
+            }
+            else
+            {
+                Varos v = (Varos)listBox_varosok.SelectedItem;
+                var cmd = conn.CreateCommand();
+                cmd.CommandText = @"INSERT INTO latvanyossagok (nev, leiras, ar, varos_id)
+                                VALUES (@nev, @leiras, @ar, @varos_id)";
+                cmd.Parameters.AddWithValue("@nev", textBox_latvanyossagNev.Text);
+                cmd.Parameters.AddWithValue("@leiras", textBox_latvanyossag_leiras.Text);
+                cmd.Parameters.AddWithValue("@ar", numericUpDown_latvanyossag_ar.Value);
+                cmd.Parameters.AddWithValue("@varos_id", v.Id);
+                cmd.ExecuteNonQuery();
+                MessageBox.Show("Sikeresen hozzáadta a látványosságot");
+                textBox_latvanyossagNev.Clear();
+                textBox_latvanyossag_leiras.Clear();
+                numericUpDown_latvanyossag_ar.Value = 0;
+                listBox_varosok.ClearSelected();
+            }
+        }
+
+        private void button_torles_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var cmd = conn.CreateCommand();
+                cmd.CommandText = @"DELETE FROM `varosok`WHERE id = @id";
+                cmd.Parameters.AddWithValue("@id", ((Varos)listBox_varosok.SelectedItem).Id);
+                cmd.ExecuteNonQuery();
+                MessageBox.Show("Sikeres Törlés!!");
+                varoslistazas();
+            }
+            catch
+            {
+                MessageBox.Show("Ezt a várost nem tudod törölni mert meg van adva látványosság");
+            }
         }
     }
 }
